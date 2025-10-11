@@ -1,6 +1,6 @@
-fastapi
-uvicorn[standard]
-SQLAlchemy
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+Flask-Bcrypt
+python-dotenv
 mysql-connector-python
-pydantic
-bcrypt
