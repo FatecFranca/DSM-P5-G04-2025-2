@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 // Criar um novo usuário
 const createUser = async (req, res) => {
@@ -111,10 +112,46 @@ const deleteUser = async (req, res) => {
     }
 };
 
+// Login de usuário
+const loginUser = async (req, res) => {
+    try {
+        const { 'E-mail': Email, Senha } = req.body;
+
+        if (!Email || !Senha) {
+            return res.status(400).json({ error: 'E-mail e Senha são obrigatórios' });
+        }
+
+        const user = await User.findOne({ where: { 'E-mail': Email } });
+
+        if (!user) {
+            return res.status(401).json({ error: 'Credenciais inválidas' }); // Usuário não encontrado
+        }
+
+        const isMatch = await user.checkPassword(Senha);
+
+        if (!isMatch) {
+            return res.status(401).json({ error: 'Credenciais inválidas' }); // Senha incorreta
+        }
+
+        // Gerar o token JWT
+        const token = jwt.sign(
+            { id: user.Id_usuario, nome: user.Nome },
+            process.env.JWT_SECRET,
+            { expiresIn: '8h' } // Token expira em 8 horas
+        );
+
+        res.status(200).json({ message: 'Login bem-sucedido', token });
+
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao fazer login', details: error.message });
+    }
+};
+
 module.exports = {
     createUser,
     getAllUsers,
     getUserById,
     updateUser,
-    deleteUser
+    deleteUser,
+    loginUser
 };

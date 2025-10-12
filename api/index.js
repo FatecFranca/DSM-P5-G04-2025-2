@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const sequelize = require('./database/connection');
 const userRoutes = require('./routes/userRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,6 +17,9 @@ app.get('/', (req, res) => {
 
 // Usar as rotas de usuário para o endpoint /usuarios
 app.use('/usuarios', userRoutes);
+
+// Usar as rotas de autenticação para o endpoint /login
+app.use('/login', authRoutes);
 
 // Testar conexão com o banco e iniciar o servidor
 const startServer = async () => {
