@@ -3,6 +3,7 @@ const express = require('express');
 const sequelize = require('./database/connection');
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
+const formRoutes = require('./routes/formRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 80;
@@ -20,6 +21,9 @@ app.use('/usuarios', userRoutes);
 
 // Usar as rotas de autenticação para o endpoint /login
 app.use('/login', authRoutes);
+
+// Usar as rotas de formulário para o endpoint /forms
+app.use('/forms', formRoutes);
 
 // Testar conexão com o banco e iniciar o servidor
 const startServer = async () => {

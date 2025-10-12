@@ -1,4 +1,4 @@
-const { Form } = require('../models/form'); // Ajuste para importar o modelo corretamente
+const Form = require('../models/form');
 
 const createForm = async (req, res) => {
     try {
