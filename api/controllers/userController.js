@@ -64,12 +64,15 @@ const getUserById = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const { Nome, 'E-mail': Email, Cep, data_nasc, Senha } = req.body;
-
         const user = await User.findByPk(id);
 
         if (!user) {
             return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        // Verifica se o usuário autenticado é o mesmo que está sendo atualizado
+        if (req.user.id !== user.Id_usuario) {
+            return res.status(403).json({ error: 'Acesso negado. Você só pode atualizar seu próprio perfil.' });
         }
 
         // Atualiza os campos fornecidos
@@ -102,6 +105,11 @@ const deleteUser = async (req, res) => {
 
         if (!user) {
             return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        // Verifica se o usuário autenticado é o mesmo que está sendo deletado
+        if (req.user.id !== user.Id_usuario) {
+            return res.status(403).json({ error: 'Acesso negado. Você só pode deletar seu próprio perfil.' });
         }
 
         await user.destroy();
