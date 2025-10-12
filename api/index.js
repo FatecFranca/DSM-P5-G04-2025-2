@@ -5,7 +5,7 @@ const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 80;
 
 // Middleware para interpretar JSON
 app.use(express.json());
@@ -34,7 +34,7 @@ const startServer = async () => {
 
         app.listen(PORT, '0.0.0.0', () => {
             console.log(`Servidor rodando na porta ${PORT}.`);
-            console.log(`Acesse em http://localhost:${PORT} ou http://20.150.192.36:${PORT}`);
+            console.log(`Acesse em http://20.150.192.36`);
         });
     } catch (error) {
         console.error('Não foi possível conectar ao banco de dados:', error);
