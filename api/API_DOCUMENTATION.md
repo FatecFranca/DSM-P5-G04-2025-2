@@ -104,7 +104,7 @@ Endpoints para o gerenciamento de usuários.
 - **Método:** `PUT`
 - **Endpoint:** `/usuarios/:id`
 - **Descrição:** Atualiza os dados de um usuário específico. Apenas os campos enviados no corpo serão atualizados.
-- **Autenticação:** Pública (Nota: Em um projeto real, esta rota deveria ser protegida).
+- **Autenticação:** Protegida por JWT. O usuário só pode atualizar o seu próprio perfil (o ID do token deve ser o mesmo do ID da URL).
 
 **Corpo da Requisição (Body):**
 ```json
@@ -131,7 +131,7 @@ Endpoints para o gerenciamento de usuários.
 - **Método:** `DELETE`
 - **Endpoint:** `/usuarios/:id`
 - **Descrição:** Deleta um usuário específico.
-- **Autenticação:** Pública (Nota: Em um projeto real, esta rota deveria ser protegida).
+- **Autenticação:** Protegida por JWT. O usuário só pode deletar o seu próprio perfil (o ID do token deve ser o mesmo do ID da URL).
 
 **Resposta de Sucesso (200 OK):**
 ```json
