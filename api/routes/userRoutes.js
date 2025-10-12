@@ -11,4 +11,7 @@ router.get('/', userController.getAllUsers);
 // Rota para obter um usuário pelo ID (GET /usuarios/:id)
 router.get('/:id', userController.getUserById);
 
+// Rota para atualizar um usuário (PUT /usuarios/:id)
+router.put('/:id', userController.updateUser);
+
 module.exports = router;

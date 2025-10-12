@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const bcrypt = require('bcrypt');
 
 // Criar um novo usuário
 const createUser = async (req, res) => {
@@ -58,8 +59,43 @@ const getUserById = async (req, res) => {
     }
 };
 
+// Atualizar um usuário
+const updateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { Nome, 'E-mail': Email, Cep, data_nasc, Senha } = req.body;
+
+        const user = await User.findByPk(id);
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        // Atualiza os campos fornecidos
+        if (Nome) user.Nome = Nome;
+        if (Email) user['E-mail'] = Email;
+        if (Cep) user.Cep = Cep;
+        if (data_nasc) user.data_nasc = data_nasc;
+
+        // Se uma nova senha for fornecida, hasheia e atualiza
+        if (Senha) {
+            user.Senha = await bcrypt.hash(Senha, 10);
+        }
+
+        await user.save();
+
+        const userResponse = user.toJSON();
+        delete userResponse.Senha;
+
+        res.status(200).json(userResponse);
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao atualizar usuário', details: error.message });
+    }
+};
+
 module.exports = {
     createUser,
     getAllUsers,
-    getUserById
+    getUserById,
+    updateUser
 };
