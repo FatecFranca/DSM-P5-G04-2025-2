@@ -14,4 +14,7 @@ router.get('/:id', userController.getUserById);
 // Rota para atualizar um usuário (PUT /usuarios/:id)
 router.put('/:id', userController.updateUser);
 
+// Rota para deletar um usuário (DELETE /usuarios/:id)
+router.delete('/:id', userController.deleteUser);
+
 module.exports = router;
