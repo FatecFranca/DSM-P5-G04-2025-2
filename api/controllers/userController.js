@@ -40,7 +40,26 @@ const getAllUsers = async (req, res) => {
     }
 };
 
+// Obter um usuário pelo ID
+const getUserById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findByPk(id, {
+            attributes: { exclude: ['Senha'] }
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao buscar usuário', details: error.message });
+    }
+};
+
 module.exports = {
     createUser,
-    getAllUsers
+    getAllUsers,
+    getUserById
 };
