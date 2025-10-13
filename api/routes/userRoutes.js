@@ -7,10 +7,10 @@ const authMiddleware = require('../middleware/authMiddleware');
 router.post('/', userController.createUser);
 
 // Rota para obter todos os usuários (GET /usuarios)
-router.get('/', userController.getAllUsers);
+router.get('/', authMiddleware, userController.getAllUsers);
 
 // Rota para obter um usuário pelo ID (GET /usuarios/:id)
-router.get('/:id', userController.getUserById);
+router.get('/:id', authMiddleware, userController.getUserById);
 
 // Rota para atualizar um usuário (PUT /usuarios/:id)
 router.put('/:id', authMiddleware, userController.updateUser);
