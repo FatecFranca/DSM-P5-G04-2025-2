@@ -56,7 +56,7 @@ Endpoints para o gerenciamento de usuários.
 - **Método:** `GET`
 - **Endpoint:** `/usuarios`
 - **Descrição:** Retorna uma lista com todos os usuários cadastrados.
-- **Autenticação:** Pública.
+- **Autenticação:** Protegida por JWT.
 
 **Resposta de Sucesso (200 OK):**
 ```json
@@ -85,7 +85,7 @@ Endpoints para o gerenciamento de usuários.
 - **Método:** `GET`
 - **Endpoint:** `/usuarios/:id`
 - **Descrição:** Retorna os dados de um usuário específico.
-- **Autenticação:** Pública.
+- **Autenticação:** Protegida por JWT.
 
 **Resposta de Sucesso (200 OK):**
 ```json
