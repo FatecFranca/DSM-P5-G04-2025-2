@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: cafezen-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password_secreta
+      MYSQL_DATABASE: cafezen
+      MYSQL_USER: fukuta
+      MYSQL_PASSWORD: 'FatecFranca123#'
+    ports:
+      # Expõe a porta do banco para que você possa acessá-lo de fora se precisar
+      - '3306:3306'
+    volumes:
+      # Garante que os dados do banco não se percam ao reiniciar o contêiner
+      - db-data:/var/lib/mysql
+
+  api:
+    build: .
+    container_name: cafezen-api
+    restart: always
+    ports:
+      - '80:80'
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: cafezen
+      DB_USER: fukuta
+      DB_PASSWORD: 'FatecFranca123#'
+      JWT_SECRET: d97124010c76cae457d79eb4bfaca28536571bc469cbd544b249d35961211c20
+    depends_on:
+      - db
+
+volumes:
+  db-data:

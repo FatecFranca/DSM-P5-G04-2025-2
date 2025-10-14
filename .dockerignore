@@ -1,0 +1,15 @@
+# Ignore dependencies
+node_modules
+
+# Ignore environment files
+.env
+
+# Ignore Git and other version control files
+.git
+.gitignore
+
+# Ignore local development files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+historicoGemini.txt
