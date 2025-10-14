@@ -1,0 +1,165 @@
+const User = require('../models/user');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+// Criar um novo usuário
+const createUser = async (req, res) => {
+    try {
+        const { Nome, CPF, 'E-mail': Email, Senha, Cep, data_nasc } = req.body;
+
+        // Validação básica
+        if (!Nome || !CPF || !Email || !Senha || !Cep || !data_nasc) {
+            return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+        }
+
+        // Verificar se usuário já existe
+        const existingUser = await User.findOne({ where: { CPF } });
+        if (existingUser) {
+            return res.status(409).json({ error: 'Usuário com este CPF já existe' });
+        }
+
+        const newUser = await User.create({ Nome, CPF, 'E-mail': Email, Senha, Cep, data_nasc });
+        
+        // Não retornar a senha na resposta
+        const userResponse = newUser.toJSON();
+        delete userResponse.Senha;
+
+        res.status(201).json(userResponse);
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao criar usuário', details: error.message });
+    }
+};
+
+// Obter todos os usuários
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.findAll({
+            attributes: { exclude: ['Senha'] } // Excluir o campo Senha
+        });
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao buscar usuários', details: error.message });
+    }
+};
+
+// Obter um usuário pelo ID
+const getUserById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findByPk(id, {
+            attributes: { exclude: ['Senha'] }
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao buscar usuário', details: error.message });
+    }
+};
+
+// Atualizar um usuário
+const updateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findByPk(id);
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        // Verifica se o usuário autenticado é o mesmo que está sendo atualizado
+        if (req.user.id !== user.Id_usuario) {
+            return res.status(403).json({ error: 'Acesso negado. Você só pode atualizar seu próprio perfil.' });
+        }
+
+        // Atualiza os campos fornecidos
+        if (Nome) user.Nome = Nome;
+        if (Email) user['E-mail'] = Email;
+        if (Cep) user.Cep = Cep;
+        if (data_nasc) user.data_nasc = data_nasc;
+
+        // Se uma nova senha for fornecida, hasheia e atualiza
+        if (Senha) {
+            user.Senha = await bcrypt.hash(Senha, 10);
+        }
+
+        await user.save();
+
+        const userResponse = user.toJSON();
+        delete userResponse.Senha;
+
+        res.status(200).json(userResponse);
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao atualizar usuário', details: error.message });
+    }
+};
+
+// Deletar um usuário
+const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findByPk(id);
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        // Verifica se o usuário autenticado é o mesmo que está sendo deletado
+        if (req.user.id !== user.Id_usuario) {
+            return res.status(403).json({ error: 'Acesso negado. Você só pode deletar seu próprio perfil.' });
+        }
+
+        await user.destroy();
+
+        res.status(200).json({ message: 'Usuário deletado com sucesso' });
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao deletar usuário', details: error.message });
+    }
+};
+
+// Login de usuário
+const loginUser = async (req, res) => {
+    try {
+        const { 'E-mail': Email, Senha } = req.body;
+
+        if (!Email || !Senha) {
+            return res.status(400).json({ error: 'E-mail e Senha são obrigatórios' });
+        }
+
+        const user = await User.findOne({ where: { 'E-mail': Email } });
+
+        if (!user) {
+            return res.status(401).json({ error: 'Credenciais inválidas' }); // Usuário não encontrado
+        }
+
+        const isMatch = await user.checkPassword(Senha);
+
+        if (!isMatch) {
+            return res.status(401).json({ error: 'Credenciais inválidas' }); // Senha incorreta
+        }
+
+        // Gerar o token JWT
+        const token = jwt.sign(
+            { id: user.Id_usuario, nome: user.Nome },
+            process.env.JWT_SECRET,
+            { expiresIn: '8h' } // Token expira em 8 horas
+        );
+
+        res.status(200).json({ message: 'Login bem-sucedido', token });
+
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao fazer login', details: error.message });
+    }
+};
+
+module.exports = {
+    createUser,
+    getAllUsers,
+    getUserById,
+    updateUser,
+    deleteUser,
+    loginUser
+};
