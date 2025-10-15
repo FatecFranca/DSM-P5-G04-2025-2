@@ -223,3 +223,76 @@ Endpoints para o gerenciamento dos formulários de saúde.
     "Alcool": "Socialmente"
 }
 ```
+
+### 3.2 Buscar Formulário
+
+- **Método:** `GET`
+- **Endpoint:** `/forms`
+- **Descrição:** Busca o formulário de saúde preenchido pelo usuário autenticado.
+- **Autenticação:** **Protegida por JWT.**
+
+**Resposta de Sucesso (200 OK):**
+```json
+{
+    "Id_form": 1,
+    "Id_usuario": 1,
+    "Idade": 33,
+    "Genero": "Masculino",
+    "Pais": "Brasil",
+    "xicarasDiaCafe": 3,
+    "cafeinaEstimada": 250,
+    "horasSono": 7,
+    "qualidadeDeSono": 8,
+    "IMC": 24.5,
+    "frequenciaCardio": 65,
+    "problemasDeSaude": "Nenhum",
+    "atvFisicaSemanalHrs": 5,
+    "Ocupacao": "Desenvolvedor",
+    "Fuma": "Não",
+    "Alcool": "Socialmente"
+}
+```
+
+**Resposta de Erro (404 Not Found):**
+```json
+{
+    "error": "Formulário não encontrado"
+}
+```
+
+### 3.3 Atualizar Formulário
+
+- **Método:** `PUT`
+- **Endpoint:** `/forms`
+- **Descrição:** Atualiza o formulário de saúde do usuário autenticado. Apenas os campos enviados no corpo da requisição serão atualizados.
+- **Autenticação:** **Protegida por JWT.**
+
+**Corpo da Requisição (Body):**
+```json
+{
+    "xicarasDiaCafe": 4,
+    "qualidadeDeSono": 7
+}
+```
+
+**Resposta de Sucesso (200 OK):**
+```json
+{
+    "Id_form": 1,
+    "Id_usuario": 1,
+    "Idade": 33,
+    "Genero": "Masculino",
+    "Pais": "Brasil",
+    "xicarasDiaCafe": 4,
+    "cafeinaEstimada": 250,
+    "horasSono": 7,
+    "qualidadeDeSono": 7,
+    "IMC": 24.5,
+    "frequenciaCardio": 65,
+    "problemasDeSaude": "Nenhum",
+    "atvFisicaSemanalHrs": 5,
+    "Ocupacao": "Desenvolvedor",
+    "Fuma": "Não",
+    "Alcool": "Socialmente"
+}
+```
