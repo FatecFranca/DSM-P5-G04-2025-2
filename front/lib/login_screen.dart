@@ -1,6 +1,11 @@
 import 'package:dsm_p5_g04_2025_2/habits_form_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:dsm_p5_g04_2025_2/register_screen.dart';
+import 'package:dsm_p5_g04_2025_2/services/api_service.dart';
+import 'package:flutter/material.dart';
+
+// Variável global temporária para armazenar o token
+// O ideal no futuro é usar uma solução como flutter_secure_storage
+String? authToken;
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -12,10 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
-
-  // Variáveis para guardar o último usuário cadastrado (solução temporária)
-  String? _lastRegisteredEmail;
-  String? _lastRegisteredPassword;
+  final ApiService _apiService = ApiService();
 
   @override
   void dispose() {
@@ -30,57 +32,45 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = true;
       });
 
-      await Future.delayed(Duration(seconds: 1)); // Simula verificação
+      try {
+        final response = await _apiService.login(
+          _emailController.text,
+          _passwordController.text,
+        );
 
-      // --- LÓGICA DE LOGIN CORRIGIDA ---
-      String email = _emailController.text;
-      String password = _passwordController.text;
+        // Salva o token para uso futuro
+        authToken = response['token'];
 
-      // Condição 1: Verifica o usuário de teste padrão
-      bool isTestUser = (email == 'teste@cafezen.com' && password == '123456');
-
-      // Condição 2: Verifica se é o usuário que acabou de ser cadastrado
-      bool isLastRegisteredUser = (email == _lastRegisteredEmail && password == _lastRegisteredPassword);
-
-      if (isTestUser || isLastRegisteredUser) {
-        // --- NAVEGAÇÃO CORRIGIDA ---
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HabitsFormScreen()), // Vai para a tela de formulário
+          MaterialPageRoute(builder: (context) => HabitsFormScreen()),
         );
-      } else {
+
+      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('E-mail ou senha inválidos'),
+            content: Text('Erro no login: ${e.toString().replaceAll("Exception: ", "")}'),
             backgroundColor: Colors.redAccent,
           ),
         );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
       }
-
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
-  // --- FUNÇÃO PARA NAVEGAR E RECEBER DADOS DO CADASTRO ---
   void _navigateToRegisterScreen() async {
-    // Usa 'await' para esperar a tela de cadastro fechar e devolver os dados
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => RegisterScreen()),
     );
 
-    // Se a tela de cadastro devolveu dados...
     if (result != null && result is Map) {
-      // Preenche os campos de login automaticamente
       _emailController.text = result['email'];
       _passwordController.text = result['password'];
 
-      // Guarda os dados para a função _login() poder verificar
-      _lastRegisteredEmail = result['email'];
-      _lastRegisteredPassword = result['password'];
-      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Cadastro realizado! Faça o login para continuar.'),
