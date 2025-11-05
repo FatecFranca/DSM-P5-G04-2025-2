@@ -5,12 +5,14 @@ const sequelize = require('./database/connection');
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 const formRoutes = require('./routes/formRoutes');
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 80;
 
 // Middleware para interpretar JSON
 app.use(express.json());
+app.use(cors());
 
 // Rota principal
 app.get('/', (req, res) => {

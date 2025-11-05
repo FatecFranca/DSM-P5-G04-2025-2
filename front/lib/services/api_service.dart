@@ -58,4 +58,31 @@ class ApiService {
       throw Exception(jsonDecode(response.body)['error'] ?? 'Falha no cadastro');
     }
   }
+  // Endpoint para enviar o formulário de hábitos
+  Future<Map<String, dynamic>> submitHabitsForm({
+    required String token,
+    required Map<String, dynamic> formData,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/forms'), // A rota base para formulários é /forms
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token', // Envia o token de autenticação
+      },
+      body: jsonEncode(formData),
+    );
+
+    if (response.statusCode == 201) {
+      return jsonDecode(response.body);
+    } else {
+      // Tenta decodificar o erro, se houver
+      try {
+        final errorBody = jsonDecode(response.body);
+        throw Exception(errorBody['error'] ?? 'Falha ao enviar formulário');
+      } catch (e) {
+        // Se o corpo do erro não for JSON ou estiver vazio
+        throw Exception('Falha ao enviar formulário. Status: ${response.statusCode}');
+      }
+    }
+  }
 }

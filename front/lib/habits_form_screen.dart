@@ -1,6 +1,7 @@
+import 'package:dsm_p5_g04_2025_2/login_screen.dart';
+import 'package:dsm_p5_g04_2025_2/profile_screen.dart';
+import 'package:dsm_p5_g04_2025_2/services/api_service.dart';
 import 'package:flutter/material.dart';
-import 'dart:math'; // Para a lógica de simulação
-import 'package:dsm_p5_g04_2025_2/result_screen.dart'; // Para a nova tela
 
 class HabitsFormScreen extends StatefulWidget {
   @override
@@ -8,14 +9,19 @@ class HabitsFormScreen extends StatefulWidget {
 }
 
 class _HabitsFormScreenState extends State<HabitsFormScreen> {
+  // Chave para o formulário
+  final _formKey = GlobalKey<FormState>();
+  final _apiService = ApiService();
+  bool _isLoading = false;
+
   // Controladores para os campos de texto
-  final _ageController = TextEditingController(text: '25');
-  final _coffeeConsumptionController = TextEditingController(text: '3');
-  final _caffeineController = TextEditingController(text: '200');
-  final _sleepHoursController = TextEditingController(text: '8');
-  final _imcController = TextEditingController(text: '22.5');
-  final _heartRateController = TextEditingController(text: '50');
-  final _activityController = TextEditingController(text: '5');
+  final _ageController = TextEditingController();
+  final _coffeeConsumptionController = TextEditingController();
+  final _caffeineController = TextEditingController();
+  final _sleepHoursController = TextEditingController();
+  final _imcController = TextEditingController();
+  final _heartRateController = TextEditingController();
+  final _activityController = TextEditingController();
 
   // Variáveis para os dropdowns e switches
   String? _selectedGender;
@@ -24,7 +30,7 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
   String? _selectedHealthProblem;
   String? _selectedOccupation;
   bool _smokes = false;
-  bool _drinksAlcohol = true;
+  bool _drinksAlcohol = false;
 
   @override
   void dispose() {
@@ -38,13 +44,90 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
     super.dispose();
   }
 
+  // Função para enviar o formulário
+  void _submitForm() async {
+    // Primeiro, valida o formulário
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      // Monta o corpo da requisição com base nos campos do controller
+      final formData = {
+        "Idade": int.tryParse(_ageController.text) ?? 0,
+        "Genero": _selectedGender,
+        "Pais": _selectedCountry,
+        "xicarasDiaCafe": int.tryParse(_coffeeConsumptionController.text) ?? 0,
+        "cafeinaEstimada": int.tryParse(_caffeineController.text) ?? 0,
+        "horasSono": double.tryParse(_sleepHoursController.text) ?? 0.0,
+        "qualidadeDeSono": _selectedSleepQuality,
+        "IMC": double.tryParse(_imcController.text) ?? 0.0,
+        "frequenciaCardio": int.tryParse(_heartRateController.text) ?? 0,
+        "problemasDeSaude": _selectedHealthProblem,
+        "atvFisicaSemanalHrs": int.tryParse(_activityController.text) ?? 0,
+        "Ocupacao": _selectedOccupation,
+        "Fuma": _smokes,
+        "Alcool": _drinksAlcohol,
+      };
+
+      try {
+        // Verifica se o token existe
+        if (authToken == null) {
+          throw Exception("Usuário não autenticado. Faça o login novamente.");
+        }
+
+        // Chama o serviço da API
+        await _apiService.submitHabitsForm(
+          token: authToken!,
+          formData: formData,
+        );
+
+        // Feedback de sucesso
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Formulário enviado com sucesso!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navega para a tela de perfil após o sucesso
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => ProfileScreen()),
+          (Route<dynamic> route) => false,
+        );
+
+      } catch (e) {
+        // Feedback de erro
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao enviar: ${e.toString().replaceAll("Exception: ", "")}'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } else {
+      // Se a validação falhar, mostra uma mensagem
+       ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Por favor, preencha todos os campos obrigatórios.'),
+            backgroundColor: Colors.orangeAccent,
+          ),
+        );
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF0F0F0), // Cor de fundo cinza claro
-      // 1. AppBar personalizada
+      backgroundColor: Color(0xFFF0F0F0),
       appBar: AppBar(
-        backgroundColor: Color(0xFFB88A6E), // Tom de marrom/laranja
+        backgroundColor: Color(0xFFB88A6E),
         elevation: 4,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
@@ -61,246 +144,205 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.asset(
-              'assets/images/cafezen_icon.png', // Verifique o nome do seu ícone
-            ),
+            child: Image.asset('assets/images/cafezen_icon.png'),
           ),
         ],
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              // 2. Card: Perfil Pessoal
-              _buildFormCard(
-                icon: Icons.person,
-                iconColor: Colors.green,
-                title: 'Perfil Pessoal',
-                children: [
-                  _buildTextField(
-                    label: 'Idade',
-                    controller: _ageController,
-                    keyboardType: TextInputType.number,
-                  ),
-                  _buildDropdownField(
-                    label: 'Gênero',
-                    hint: 'Selecione o seu gênero',
-                    value: _selectedGender,
-                    items: ['Masculino', 'Feminino', 'Outro'],
-                    onChanged: (value) =>
-                        setState(() => _selectedGender = value),
-                  ),
-                  _buildDropdownField(
-                    label: 'País',
-                    hint: 'Selecione o seu país',
-                    value: _selectedCountry,
-                    items: ['Brasil', 'Portugal', 'Estados Unidos', 'Outro'],
-                    onChanged: (value) =>
-                        setState(() => _selectedCountry = value),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-
-              // 3. Card: Hábitos com Café
-              _buildFormCard(
-                icon: Icons.coffee,
-                iconColor: Colors.lightGreen,
-                title: 'Hábitos com Café',
-                children: [
-                  _buildTextField(
-                    label: 'Consumo diário de café (xícaras)',
-                    controller: _coffeeConsumptionController,
-                    keyboardType: TextInputType.number,
-                  ),
-                  _buildTextField(
-                    label: 'Cafeína estimada',
-                    controller: _caffeineController,
-                    keyboardType: TextInputType.number,
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-
-              // 4. Card: Qualidade do Sono
-              _buildFormCard(
-                icon: Icons.nightlight_round,
-                iconColor: Colors.black,
-                title: 'Qualidade do Sono',
-                children: [
-                  _buildTextField(
-                    label: 'Horas de sono',
-                    controller: _sleepHoursController,
-                    keyboardType: TextInputType.number,
-                  ),
-                  _buildDropdownField(
-                    label: 'Qualidade do sono',
-                    hint: 'Como avalia seu sono',
-                    value: _selectedSleepQuality,
-                    items: [
-                      'Muito bom',
-                      'Bom',
-                      'Regular',
-                      'Ruim',
-                      'Muito ruim',
-                    ],
-                    onChanged: (value) =>
-                        setState(() => _selectedSleepQuality = value),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-
-              // 5. Card: Saúde Física
-              _buildFormCard(
-                icon: Icons.favorite,
-                iconColor: Colors.lightGreen.shade300,
-                title: 'Saúde Física',
-                children: [
-                  _buildTextField(
-                    label: 'IMC',
-                    controller: _imcController,
-                    keyboardType: TextInputType.numberWithOptions(
-                      decimal: true,
+          // Adiciona o widget Form com a chave
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                _buildFormCard(
+                  icon: Icons.person,
+                  iconColor: Colors.green,
+                  title: 'Perfil Pessoal',
+                  children: [
+                    _buildTextField(
+                      label: 'Idade',
+                      controller: _ageController,
+                      keyboardType: TextInputType.number,
+                      validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
                     ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {},
-                      child: Text('Não sei meu IMC'),
+                    _buildDropdownField(
+                      label: 'Gênero',
+                      hint: 'Selecione o seu gênero',
+                      value: _selectedGender,
+                      items: ['Masculino', 'Feminino', 'Outro'],
+                      onChanged: (value) => setState(() => _selectedGender = value),
+                      validator: (value) => value == null ? 'Campo obrigatório' : null,
                     ),
-                  ),
-                  _buildTextField(
-                    label: 'Frequência cardíaca em repouso',
-                    controller: _heartRateController,
-                    keyboardType: TextInputType.number,
-                  ),
-                  _buildDropdownField(
-                    label: 'Problemas de saúde',
-                    hint: 'Como está sua saúde',
-                    value: _selectedHealthProblem,
-                    items: [
-                      'Excelente',
-                      'Boa',
-                      'Com problemas crônicos',
-                      'Em tratamento',
-                    ],
-                    onChanged: (value) =>
-                        setState(() => _selectedHealthProblem = value),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-
-              // 6. Card: Atividade Física
-              _buildFormCard(
-                icon: Icons.fitness_center,
-                iconColor: Colors.green.shade800,
-                title: 'Atividade Física',
-                children: [
-                  _buildTextField(
-                    label: 'Atividade física semanal (horas)',
-                    controller: _activityController,
-                    keyboardType: TextInputType.number,
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-
-              // 7. Card: Ocupação
-              _buildFormCard(
-                icon: Icons.work,
-                iconColor: Colors.blueGrey,
-                title: 'Ocupação',
-                children: [
-                  _buildDropdownField(
-                    label: 'Área de trabalho',
-                    hint: 'Qual a sua área de trabalho',
-                    value: _selectedOccupation,
-                    items: [
-                      'Escritório',
-                      'Trabalho manual',
-                      'Estudante',
-                      'Autônomo',
-                    ],
-                    onChanged: (value) =>
-                        setState(() => _selectedOccupation = value),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-
-              // 8. Card: Outros Hábitos
-              _buildFormCard(
-                title: 'Outros Hábitos',
-                children: [
-                  _buildSwitchField(
-                    label: 'Fuma?',
-                    value: _smokes,
-                    onChanged: (value) => setState(() => _smokes = value),
-                  ),
-                  _buildSwitchField(
-                    label: 'Consome álcool?',
-                    value: _drinksAlcohol,
-                    onChanged: (value) =>
-                        setState(() => _drinksAlcohol = value),
-                  ),
-                ],
-              ),
-              SizedBox(height: 32),
-
-              // 9. Botão Final
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // --- LÓGICA DE CÁLCULO (SIMULAÇÃO) ---
-                    // No futuro, você usará os valores dos controllers para uma lógica real.
-                    // Por agora, vamos escolher um resultado aleatório para testar a tela.
-                    final random = Random();
-                    final stressLevels =
-                        StressLevel.values; // Pega a lista [Baixo, Medio, Alto]
-                    final randomLevel =
-                        stressLevels[random.nextInt(stressLevels.length)];
-
-                    // Navega para a tela de resultado, enviando o nível calculado
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ResultScreen(level: randomLevel),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    'Calcular estresse',
-                    // ...
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                    _buildDropdownField(
+                      label: 'País',
+                      hint: 'Selecione o seu país',
+                      value: _selectedCountry,
+                      items: ['Brasil', 'Portugal', 'Estados Unidos', 'Outro'],
+                      onChanged: (value) => setState(() => _selectedCountry = value),
+                       validator: (value) => value == null ? 'Campo obrigatório' : null,
                     ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF16A66D),
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
+                  ],
                 ),
-              ),
-            ],
+                SizedBox(height: 16),
+
+                _buildFormCard(
+                  icon: Icons.coffee,
+                  iconColor: Colors.lightGreen,
+                  title: 'Hábitos com Café',
+                  children: [
+                    _buildTextField(
+                      label: 'Consumo diário de café (xícaras)',
+                      controller: _coffeeConsumptionController,
+                      keyboardType: TextInputType.number,
+                      validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
+                    ),
+                    _buildTextField(
+                      label: 'Cafeína estimada',
+                      controller: _caffeineController,
+                      keyboardType: TextInputType.number,
+                      validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+
+                _buildFormCard(
+                  icon: Icons.nightlight_round,
+                  iconColor: Colors.black,
+                  title: 'Qualidade do Sono',
+                  children: [
+                    _buildTextField(
+                      label: 'Horas de sono',
+                      controller: _sleepHoursController,
+                      keyboardType: TextInputType.number,
+                      validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
+                    ),
+                    _buildDropdownField(
+                      label: 'Qualidade do sono',
+                      hint: 'Como avalia seu sono',
+                      value: _selectedSleepQuality,
+                      items: ['Muito bom', 'Bom', 'Regular', 'Ruim', 'Muito ruim'],
+                      onChanged: (value) => setState(() => _selectedSleepQuality = value),
+                      validator: (value) => value == null ? 'Campo obrigatório' : null,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+
+                _buildFormCard(
+                  icon: Icons.favorite,
+                  iconColor: Colors.lightGreen.shade300,
+                  title: 'Saúde Física',
+                  children: [
+                    _buildTextField(
+                      label: 'IMC',
+                      controller: _imcController,
+                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
+                    ),
+                    _buildTextField(
+                      label: 'Frequência cardíaca em repouso',
+                      controller: _heartRateController,
+                      keyboardType: TextInputType.number,
+                      validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
+                    ),
+                    _buildDropdownField(
+                      label: 'Problemas de saúde',
+                      hint: 'Como está sua saúde',
+                      value: _selectedHealthProblem,
+                      items: ['Excelente', 'Boa', 'Com problemas crônicos', 'Em tratamento'],
+                      onChanged: (value) => setState(() => _selectedHealthProblem = value),
+                      validator: (value) => value == null ? 'Campo obrigatório' : null,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+
+                _buildFormCard(
+                  icon: Icons.fitness_center,
+                  iconColor: Colors.green.shade800,
+                  title: 'Atividade Física',
+                  children: [
+                    _buildTextField(
+                      label: 'Atividade física semanal (horas)',
+                      controller: _activityController,
+                      keyboardType: TextInputType.number,
+                      validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+
+                _buildFormCard(
+                  icon: Icons.work,
+                  iconColor: Colors.blueGrey,
+                  title: 'Ocupação',
+                  children: [
+                    _buildDropdownField(
+                      label: 'Área de trabalho',
+                      hint: 'Qual a sua área de trabalho',
+                      value: _selectedOccupation,
+                      items: ['Escritório', 'Trabalho manual', 'Estudante', 'Autônomo'],
+                      onChanged: (value) => setState(() => _selectedOccupation = value),
+                      validator: (value) => value == null ? 'Campo obrigatório' : null,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+
+                _buildFormCard(
+                  title: 'Outros Hábitos',
+                  children: [
+                    _buildSwitchField(
+                      label: 'Fuma?',
+                      value: _smokes,
+                      onChanged: (value) => setState(() => _smokes = value),
+                    ),
+                    _buildSwitchField(
+                      label: 'Consome álcool?',
+                      value: _drinksAlcohol,
+                      onChanged: (value) => setState(() => _drinksAlcohol = value),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 32),
+
+                // Botão que agora mostra o loading e chama _submitForm
+                _isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _submitForm,
+                          child: Text(
+                            'Enviar',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF16A66D),
+                            padding: EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                        ),
+                      ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  // --- WIDGETS AUXILIARES PARA EVITAR REPETIÇÃO ---
+  // --- WIDGETS AUXILIARES COM VALIDAÇÃO ---
 
-  // Constrói um Card customizado para cada seção do formulário
   Widget _buildFormCard({
     IconData? icon,
     Color? iconColor,
@@ -338,11 +380,11 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
     );
   }
 
-  // Constrói um campo de texto com label
   Widget _buildTextField({
     required String label,
     required TextEditingController controller,
     TextInputType? keyboardType,
+    String? Function(String?)? validator,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -364,19 +406,20 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
             ),
             contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           ),
+          validator: validator,
         ),
         SizedBox(height: 16),
       ],
     );
   }
 
-  // Constrói um campo de dropdown com label
   Widget _buildDropdownField({
     required String label,
     required String hint,
     required String? value,
     required List<String> items,
     required ValueChanged<String?> onChanged,
+    String? Function(String?)? validator,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -402,13 +445,13 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
             return DropdownMenuItem<String>(value: item, child: Text(item));
           }).toList(),
           onChanged: onChanged,
+          validator: validator,
         ),
         SizedBox(height: 16),
       ],
     );
   }
 
-  // Constrói um campo de switch com label
   Widget _buildSwitchField({
     required String label,
     required bool value,
