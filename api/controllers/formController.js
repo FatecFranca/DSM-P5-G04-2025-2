@@ -3,7 +3,7 @@ const Form = require('../models/form');
 const createForm = async (req, res) => {
     try {
         const { 
-            Idade, Genero, Pais, xicarasDiaCafe, cafeinaEstimada, 
+            Idade, Genero, Pais, xicarasDiaCafe, 
             horasSono, qualidadeDeSono, IMC, frequenciaCardio, 
             problemasDeSaude, atvFisicaSemanalHrs, Ocupacao, Fuma, Alcool 
         } = req.body;
@@ -12,9 +12,11 @@ const createForm = async (req, res) => {
 
         const novoForm = await Form.create({
             Id_usuario: idUsuario,
-            Idade, Genero, Pais, xicarasDiaCafe, cafeinaEstimada,
+            Idade, Genero, Pais, xicarasDiaCafe,
             horasSono, qualidadeDeSono, IMC, frequenciaCardio,
-            problemasDeSaude, atvFisicaSemanalHrs, Ocupacao, Fuma, Alcool
+            problemasDeSaude, atvFisicaSemanalHrs, Ocupacao, 
+            Fuma: Boolean(Fuma), 
+            Alcool: Boolean(Alcool)
         });
 
         res.status(201).json(novoForm);
@@ -41,6 +43,15 @@ const getForm = async (req, res) => {
 const updateForm = async (req, res) => {
     try {
         const idUsuario = req.user.id;
+        
+        // Garante que Fuma e Alcool sejam tratados como booleans se existirem no corpo da requisição
+        if (req.body.Fuma !== undefined) {
+            req.body.Fuma = Boolean(req.body.Fuma);
+        }
+        if (req.body.Alcool !== undefined) {
+            req.body.Alcool = Boolean(req.body.Alcool);
+        }
+
         const [updated] = await Form.update(req.body, {
             where: { Id_usuario: idUsuario }
         });

@@ -17,9 +17,9 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
   // Controladores para os campos de texto
   final _ageController = TextEditingController();
   final _coffeeConsumptionController = TextEditingController();
-  final _caffeineController = TextEditingController();
   final _sleepHoursController = TextEditingController();
-  final _imcController = TextEditingController();
+  final _heightController = TextEditingController(); // Novo
+  final _weightController = TextEditingController(); // Novo
   final _heartRateController = TextEditingController();
   final _activityController = TextEditingController();
 
@@ -36,9 +36,9 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
   void dispose() {
     _ageController.dispose();
     _coffeeConsumptionController.dispose();
-    _caffeineController.dispose();
     _sleepHoursController.dispose();
-    _imcController.dispose();
+    _heightController.dispose(); // Novo
+    _weightController.dispose(); // Novo
     _heartRateController.dispose();
     _activityController.dispose();
     super.dispose();
@@ -52,16 +52,20 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
         _isLoading = true;
       });
 
+      // Calcula o IMC: peso / (altura * altura)
+      final double height = double.tryParse(_heightController.text) ?? 0.0;
+      final double weight = double.tryParse(_weightController.text) ?? 0.0;
+      final double imc = (height > 0 && weight > 0) ? weight / (height * height) : 0.0;
+
       // Monta o corpo da requisição com base nos campos do controller
       final formData = {
         "Idade": int.tryParse(_ageController.text) ?? 0,
         "Genero": _selectedGender,
         "Pais": _selectedCountry,
         "xicarasDiaCafe": int.tryParse(_coffeeConsumptionController.text) ?? 0,
-        "cafeinaEstimada": int.tryParse(_caffeineController.text) ?? 0,
         "horasSono": double.tryParse(_sleepHoursController.text) ?? 0.0,
         "qualidadeDeSono": _selectedSleepQuality,
-        "IMC": double.tryParse(_imcController.text) ?? 0.0,
+        "IMC": imc, // Envia o IMC calculado
         "frequenciaCardio": int.tryParse(_heartRateController.text) ?? 0,
         "problemasDeSaude": _selectedHealthProblem,
         "atvFisicaSemanalHrs": int.tryParse(_activityController.text) ?? 0,
@@ -198,12 +202,6 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
                       keyboardType: TextInputType.number,
                       validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
                     ),
-                    _buildTextField(
-                      label: 'Cafeína estimada',
-                      controller: _caffeineController,
-                      keyboardType: TextInputType.number,
-                      validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
-                    ),
                   ],
                 ),
                 SizedBox(height: 16),
@@ -237,8 +235,14 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
                   title: 'Saúde Física',
                   children: [
                     _buildTextField(
-                      label: 'IMC',
-                      controller: _imcController,
+                      label: 'Altura (m)',
+                      controller: _heightController,
+                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
+                    ),
+                    _buildTextField(
+                      label: 'Peso (kg)',
+                      controller: _weightController,
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                       validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
                     ),

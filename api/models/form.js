@@ -18,18 +18,17 @@ const Form = sequelize.define('Form', {
     },
     Idade: DataTypes.INTEGER,
     Genero: DataTypes.STRING(50),
-    País: DataTypes.STRING(50),
+    Pais: DataTypes.STRING(50),
     xicarasDiaCafe: DataTypes.INTEGER,
-    cafeinaEstimada: DataTypes.INTEGER,
-    horasSono: DataTypes.INTEGER,
-    qualidadeDeSono: DataTypes.INTEGER,
+    horasSono: DataTypes.FLOAT,
+    qualidadeDeSono: DataTypes.STRING(50),
     IMC: DataTypes.FLOAT,
     frequenciaCardio: DataTypes.INTEGER,
     problemasDeSaude: DataTypes.STRING(100),
     atvFisicaSemanalHrs: DataTypes.INTEGER,
     Ocupacao: DataTypes.STRING(100),
-    Fuma: DataTypes.STRING(10),
-    Alcool: DataTypes.STRING(10)
+    Fuma: DataTypes.BOOLEAN,
+    Alcool: DataTypes.BOOLEAN
 }, {
     tableName: 'Form',
     timestamps: false
