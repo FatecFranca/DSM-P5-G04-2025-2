@@ -11,3 +11,14 @@ yarn-error.log*
 
 # macOS
 .DS_Store
+
+# Python & ML
+venv/
+__pycache__/
+*.pyc
+
+# ML Artifacts & Data
+dataSet/archive/
+dataSet/*.csv
+dataSet/*.joblib
+dataSet/treinamento_AM/*.png

@@ -14,6 +14,16 @@ Nossa missão é oferecer uma forma simples e prática para que os usuários pos
 
 O nome **CaféZen** e nosso logo, que une o grão de café ao símbolo do Yin-Yang, representam a dualidade que buscamos equilibrar: a energia fornecida pelo café e a serenidade necessária para uma vida saudável.
 
+## Machine Learning: Previsão de Estresse
+
+O coração do CaféZen é um modelo de Machine Learning treinado para analisar os hábitos do usuário e prever seu nível de estresse.
+
+- **Objetivo:** Classificar o nível de estresse do usuário como Baixo, Médio ou Alto.
+- **Tecnologia:** O modelo utiliza um algoritmo de *Support Vector Machine* (SVM) treinado com um conjunto de dados sintéticos sobre consumo de café e indicadores de saúde.
+- **Implementação:** A pipeline de treinamento e os artefatos do modelo estão localizados na pasta `dataSet/`.
+
+Para mais detalhes técnicos sobre a implementação, o treinamento e como integrar o modelo à API, consulte a [documentação do modelo de Machine Learning](./dataSet/README.md).
+
 ## Links Úteis
 
 - [Figma](https://www.figma.com/files/team/1304939508932388540/recents-and-sharing?fuid=1291172194950882839)
