@@ -10,13 +10,23 @@ const createForm = async (req, res) => {
 
         const idUsuario = req.user.id; // ID do usuário vindo do token JWT (authMiddleware)
 
+        // Garante que Fuma e Alcool sejam tratados como booleans se existirem no corpo da requisição
+        if (req.body.Fuma !== undefined) {
+            req.body.Fuma = Boolean(req.body.Fuma);
+        }
+        if (req.body.Alcool !== undefined) {
+            req.body.Alcool = Boolean(req.body.Alcool);
+        }
+
+        const idUsuario = req.user.id; // ID do usuário vindo do token JWT (authMiddleware)
+
         const novoForm = await Form.create({
             Id_usuario: idUsuario,
             Idade, Genero, Pais, xicarasDiaCafe,
             horasSono, qualidadeDeSono, IMC, frequenciaCardio,
             problemasDeSaude, atvFisicaSemanalHrs, Ocupacao, 
-            Fuma: Boolean(Fuma), 
-            Alcool: Boolean(Alcool)
+            Fuma: req.body.Fuma === 'true', 
+            Alcool: req.body.Alcool === 'true'
         });
 
         res.status(201).json(novoForm);
