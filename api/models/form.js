@@ -20,7 +20,7 @@ const Form = sequelize.define('Form', {
     Genero: DataTypes.STRING(50),
     xicarasDiaCafe: DataTypes.INTEGER,
     horasSono: DataTypes.FLOAT,
-    qualidadeDeSono: DataTypes.STRING(50),
+    qualidadeDeSono: DataTypes.INTEGER,
     IMC: DataTypes.FLOAT,
     frequenciaCardio: DataTypes.INTEGER,
     problemasDeSaude: DataTypes.STRING(100),

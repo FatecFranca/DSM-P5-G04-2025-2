@@ -31,6 +31,15 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
   bool _smokes = false;
   bool _drinksAlcohol = false;
 
+  // Mapa para converter qualidade do sono de String para int
+  final Map<String, int> _sleepQualityMap = {
+    'Muito bom': 5,
+    'Bom': 4,
+    'Regular': 3,
+    'Ruim': 2,
+    'Muito ruim': 1,
+  };
+
   @override
   void dispose() {
     _ageController.dispose();
@@ -56,13 +65,17 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
       final double weight = double.tryParse(_weightController.text) ?? 0.0;
       final double imc = (height > 0 && weight > 0) ? weight / (height * height) : 0.0;
 
+      // Converte a qualidade do sono de String para int
+      final int? sleepQualityValue = _selectedSleepQuality != null ? _sleepQualityMap[_selectedSleepQuality!] : null;
+
+
       // Monta o corpo da requisição com base nos campos do controller
       final formData = {
         "Idade": int.tryParse(_ageController.text) ?? 0,
         "Genero": _selectedGender,
         "xicarasDiaCafe": int.tryParse(_coffeeConsumptionController.text) ?? 0,
         "horasSono": double.tryParse(_sleepHoursController.text) ?? 0.0,
-        "qualidadeDeSono": _selectedSleepQuality,
+        "qualidadeDeSono": sleepQualityValue ?? 0, // Envia o valor numérico
         "IMC": imc, // Envia o IMC calculado
         "frequenciaCardio": int.tryParse(_heartRateController.text) ?? 0,
         "problemasDeSaude": _selectedHealthProblem,
@@ -211,7 +224,7 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
                       label: 'Qualidade do sono',
                       hint: 'Como avalia seu sono',
                       value: _selectedSleepQuality,
-                      items: ['Muito bom', 'Bom', 'Regular', 'Ruim', 'Muito ruim'],
+                      items: _sleepQualityMap.keys.toList(),
                       onChanged: (value) => setState(() => _selectedSleepQuality = value),
                       validator: (value) => value == null ? 'Campo obrigatório' : null,
                     ),
