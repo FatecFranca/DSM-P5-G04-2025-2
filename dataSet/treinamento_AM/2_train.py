@@ -15,7 +15,7 @@ print("--- Iniciando Script 2: Treinamento e Avaliação ---")
 
 # Carrega os dados processados
 try:
-    df = pd.read_csv('dataSet/processed_coffee_data.csv')
+    df = pd.read_csv('processed_coffee_data.csv')
     print("Arquivo 'processed_coffee_data.csv' carregado com sucesso!")
 except FileNotFoundError:
     print("Erro: O arquivo 'processed_coffee_data.csv' não foi encontrado.")
@@ -43,28 +43,35 @@ models.append(('CART', DecisionTreeClassifier()))
 models.append(('NB', GaussianNB()))
 models.append(('SVM', SVC(gamma='auto')))
 
-results = []
+results_acc = []
+results_f1 = []
 names = []
-scoring = 'accuracy'
 
 for name, model in models:
     kfold = KFold(n_splits=10, shuffle=True, random_state=seed)
-    cv_results = cross_val_score(model, X_train, Y_train, cv=kfold, scoring=scoring)
-    results.append(cv_results)
+    
+    # Acurácia
+    cv_results_acc = cross_val_score(model, X_train, Y_train, cv=kfold, scoring='accuracy')
+    results_acc.append(cv_results_acc)
+    
+    # F1-Score Ponderado
+    cv_results_f1 = cross_val_score(model, X_train, Y_train, cv=kfold, scoring='f1_weighted')
+    results_f1.append(cv_results_f1)
+    
     names.append(name)
-    msg = f"{name}: {cv_results.mean():.4f} ({cv_results.std():.4f})"
+    msg = f"{name}: Acurácia={cv_results_acc.mean():.4f} (std={cv_results_acc.std():.4f}), F1-Score={cv_results_f1.mean():.4f} (std={cv_results_f1.std():.4f})"
     print(msg)
 
 # Visualização e salvamento do gráfico de comparação
 print("Gerando e salvando o gráfico de comparação de modelos...")
 fig = plt.figure(figsize=(10, 6))
-fig.suptitle('Comparação de Algoritmos de Classificação')
+fig.suptitle('Comparação de Algoritmos de Classificação (Acurácia)')
 ax = fig.add_subplot(111)
-plt.boxplot(results)
+plt.boxplot(results_acc)
 ax.set_xticklabels(names)
 plt.ylabel('Acurácia')
 try:
-    plt.savefig('dataSet/treinamento_AM/model_comparison.png')
+    plt.savefig('treinamento_AM/model_comparison.png')
     print("Gráfico 'model_comparison.png' salvo em 'dataSet/treinamento_AM/'.")
 except Exception as e:
     print(f"Erro ao salvar o gráfico: {e}")

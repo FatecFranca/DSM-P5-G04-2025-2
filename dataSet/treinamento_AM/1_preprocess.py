@@ -8,7 +8,7 @@ print("--- Iniciando Script 1: Pré-processamento ---")
 
 # Carrega o dataset
 try:
-    df = pd.read_csv('dataSet/archive/synthetic_coffee_health_10000.csv')
+    df = pd.read_csv('archive/synthetic_coffee_health_10000.csv')
     print("Arquivo 'synthetic_coffee_health_10000.csv' carregado com sucesso!")
 except FileNotFoundError:
     print("Erro: O arquivo 'dataSet/archive/synthetic_coffee_health_10000.csv' não foi encontrado.")
@@ -71,7 +71,7 @@ df[numeric_features] = scaler.fit_transform(df[numeric_features])
 
 # Salvando o DataFrame Processado
 try:
-    df.to_csv('dataSet/processed_coffee_data.csv', index=False)
+    df.to_csv('processed_coffee_data.csv', index=False)
     print("Arquivo 'processed_coffee_data.csv' salvo com sucesso na pasta 'dataSet'.")
 except Exception as e:
     print(f"Ocorreu um erro ao salvar o arquivo: {e}")

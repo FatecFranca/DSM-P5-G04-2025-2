@@ -8,7 +8,7 @@ print("--- Iniciando Script 3: Salvando Modelo Final ---")
 
 # Carrega os dados processados
 try:
-    df = pd.read_csv('dataSet/processed_coffee_data.csv')
+    df = pd.read_csv('processed_coffee_data.csv')
     print("Arquivo 'processed_coffee_data.csv' carregado com sucesso!")
 except FileNotFoundError:
     print("Erro: O arquivo 'processed_coffee_data.csv' não foi encontrado.")
@@ -33,8 +33,8 @@ model.fit(X_scaled, y)
 print("Modelo final treinado com sucesso.")
 
 # Salvando os Artefatos
-model_path = 'dataSet/modelo_estresse.joblib'
-scaler_path = 'dataSet/scaler_estresse.joblib'
+model_path = 'modelo_estresse.joblib'
+scaler_path = 'scaler_estresse.joblib'
 
 print(f"Salvando o modelo em: {model_path}")
 joblib.dump(model, model_path)
