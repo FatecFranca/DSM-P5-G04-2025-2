@@ -94,11 +94,10 @@ O modelo de Machine Learning é responsável por analisar os dados do usuário e
 ## Equipe
 
 | Integrante |
-| :--- |
-| Enzo Dalto |
-| Gustavo |
-| Thiago |
-| Washington |
+| Danilo Benedetti |
+| Gustavo Santos |
+| Thiago Resende |
+| Willton Monteiro |
 
 ---
 *Repositório do GRUPO 04 para o Projeto Interdisciplinar do 5º semestre do curso de Desenvolvimento de Software Multiplataforma (DSM) - 2025/2.*
