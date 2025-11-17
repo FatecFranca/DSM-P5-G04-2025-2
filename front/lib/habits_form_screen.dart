@@ -70,8 +70,8 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
         "problemasDeSaude": _selectedHealthProblem,
         "atvFisicaSemanalHrs": int.tryParse(_activityController.text) ?? 0,
         "Ocupacao": _selectedOccupation,
-        "Fuma": _smokes.toString(),
-        "Alcool": _drinksAlcohol.toString(),
+        "Fuma": _smokes,
+        "Alcool": _drinksAlcohol,
       };
 
       try {
