@@ -1,5 +1,7 @@
 # CaféZen: Equilíbrio entre Energia e Bem-Estar
 
+<img width="502" height="402" alt="image" src="https://github.com/user-attachments/assets/5627431a-4b7f-4dde-8afb-e5d54a4150aa" />
+
 ## Sobre o Projeto
 
 O **CaféZen** é uma ferramenta desenvolvida para ajudar pessoas a encontrarem equilíbrio em meio a uma rotina acelerada. Em um mundo onde o estresse é constante e o café é um dos principais aliados para manter a energia e o foco, nosso projeto surge para aprofundar a compreensão da relação entre esses dois fatores.
