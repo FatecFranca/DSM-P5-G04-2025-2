@@ -1,5 +1,5 @@
 import 'package:dsm_p5_g04_2025_2/login_screen.dart';
-import 'package:dsm_p5_g04_2025_2/profile_screen.dart';
+import 'package:dsm_p5_g04_2025_2/result_screen.dart';
 import 'package:dsm_p5_g04_2025_2/services/api_service.dart';
 import 'package:flutter/material.dart';
 
@@ -52,6 +52,20 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
     super.dispose();
   }
 
+  // Função para converter a string de resultado para o Enum
+  StressLevel _parseStressLevel(String level) {
+    switch (level.toLowerCase()) {
+      case 'alto':
+        return StressLevel.Alto;
+      case 'médio':
+      case 'medio':
+        return StressLevel.Medio;
+      case 'baixo':
+      default:
+        return StressLevel.Baixo;
+    }
+  }
+
   // Função para enviar o formulário
   void _submitForm() async {
     // Primeiro, valida o formulário
@@ -91,24 +105,33 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
           throw Exception("Usuário não autenticado. Faça o login novamente.");
         }
 
-        // Chama o serviço da API
-        await _apiService.submitHabitsForm(
+        // Chama o serviço da API e aguarda a resposta completa
+        final response = await _apiService.submitHabitsForm(
           token: authToken!,
           formData: formData,
         );
 
+        // Extrai a predição da resposta
+        final prediction = response['prediction'];
+        if (prediction == null || prediction['predictedStressLevel'] == null) {
+          throw Exception("A resposta da API não contém uma predição válida.");
+        }
+
+        final stressLevelString = prediction['predictedStressLevel'];
+        final stressLevel = _parseStressLevel(stressLevelString);
+
         // Feedback de sucesso
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Formulário enviado com sucesso!'),
+            content: Text('Análise concluída com sucesso!'),
             backgroundColor: Colors.green,
           ),
         );
 
-        // Navega para a tela de perfil após o sucesso
+        // Navega para a tela de resultado após o sucesso
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => ProfileScreen()),
+          MaterialPageRoute(builder: (context) => ResultScreen(level: stressLevel)),
           (Route<dynamic> route) => false,
         );
 
