@@ -79,7 +79,7 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Matheus Santos', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF2A543D))),
+            Text('Seu Perfil', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF2A543D))),
             SizedBox(height: 8),
             Text('Membro desde setembro de 2025', style: TextStyle(color: Colors.grey[600])),
             SizedBox(height: 12),
