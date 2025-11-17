@@ -21,6 +21,7 @@ const createForm = async (req, res) => {
 
         res.status(201).json(novoForm);
     } catch (error) {
+        console.error('Erro detalhado:', error);
         res.status(500).json({ error: 'Erro ao criar formulário', details: error.message });
     }
 };
