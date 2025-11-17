@@ -94,6 +94,7 @@ O modelo de Machine Learning é responsável por analisar os dados do usuário e
 ## Equipe
 
 | Integrante |
+| -- |
 | Danilo Benedetti |
 | Gustavo Santos |
 | Thiago Resende |
