@@ -25,7 +25,6 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
 
   // Variáveis para os dropdowns e switches
   String? _selectedGender;
-  String? _selectedCountry;
   String? _selectedSleepQuality;
   String? _selectedHealthProblem;
   String? _selectedOccupation;
@@ -61,7 +60,6 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
       final formData = {
         "Idade": int.tryParse(_ageController.text) ?? 0,
         "Genero": _selectedGender,
-        "Pais": _selectedCountry,
         "xicarasDiaCafe": int.tryParse(_coffeeConsumptionController.text) ?? 0,
         "horasSono": double.tryParse(_sleepHoursController.text) ?? 0.0,
         "qualidadeDeSono": _selectedSleepQuality,
@@ -178,14 +176,6 @@ class _HabitsFormScreenState extends State<HabitsFormScreen> {
                       items: ['Masculino', 'Feminino', 'Outro'],
                       onChanged: (value) => setState(() => _selectedGender = value),
                       validator: (value) => value == null ? 'Campo obrigatório' : null,
-                    ),
-                    _buildDropdownField(
-                      label: 'País',
-                      hint: 'Selecione o seu país',
-                      value: _selectedCountry,
-                      items: ['Brasil', 'Portugal', 'Estados Unidos', 'Outro'],
-                      onChanged: (value) => setState(() => _selectedCountry = value),
-                       validator: (value) => value == null ? 'Campo obrigatório' : null,
                     ),
                   ],
                 ),

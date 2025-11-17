@@ -3,7 +3,7 @@ const Form = require('../models/form');
 const createForm = async (req, res) => {
     try {
         const { 
-            Idade, Genero, Pais, xicarasDiaCafe, 
+            Idade, Genero, xicarasDiaCafe, 
             horasSono, qualidadeDeSono, IMC, frequenciaCardio, 
             problemasDeSaude, atvFisicaSemanalHrs, Ocupacao, Fuma, Alcool 
         } = req.body;
@@ -12,7 +12,7 @@ const createForm = async (req, res) => {
 
         const novoForm = await Form.create({
             Id_usuario: idUsuario,
-            Idade, Genero, Pais, xicarasDiaCafe,
+            Idade, Genero, xicarasDiaCafe,
             horasSono, qualidadeDeSono, IMC, frequenciaCardio,
             problemasDeSaude, atvFisicaSemanalHrs, Ocupacao, 
             Fuma,
