@@ -18,16 +18,13 @@ const createForm = async (req, res) => {
             req.body.Alcool = Boolean(req.body.Alcool);
         }
 
-        const idUsuario = req.user.id; // ID do usuário vindo do token JWT (authMiddleware)
-
         const novoForm = await Form.create({
             Id_usuario: idUsuario,
             Idade, Genero, Pais, xicarasDiaCafe,
             horasSono, qualidadeDeSono, IMC, frequenciaCardio,
             problemasDeSaude, atvFisicaSemanalHrs, Ocupacao, 
-            Fuma: req.body.Fuma === 'true', 
-            Alcool: req.body.Alcool === 'true'
-        });
+                        Fuma: req.body.Fuma,
+                        Alcool: req.body.Alcool        });
 
         res.status(201).json(novoForm);
     } catch (error) {
