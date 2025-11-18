@@ -89,7 +89,15 @@ const createForm = async (req, res) => {
             "Alcohol_Consumption": Alcool ? 1 : 0,
             // O script espera o país e a ocupação para o One-Hot Encoding
             "Country": "Brazil", // Assumindo Brasil como padrão
-            "Health_Issues": problemasDeSaude === 'Excelente' || problemasDeSaude === 'Boa' ? 'None' : 'Mild', // Simplificação
+            "Health_Issues": (() => {
+                switch (problemasDeSaude) {
+                    case 'Excelente': return 'None';
+                    case 'Boa': return 'Mild';
+                    case 'Em tratamento': return 'Moderate';
+                    case 'Com problemas crônicos': return 'Severe';
+                    default: return 'None'; // Valor padrão caso não haja correspondência
+                }
+            })(),
             "Occupation": Ocupacao === 'Estudante' ? 'Student' : (Ocupacao === 'Autônomo' ? 'Service' : 'Other') // Simplificação
         };
 

@@ -16,16 +16,8 @@ def predict(data):
     except FileNotFoundError:
         return {"error": "Modelo ou normalizador não encontrado. Garanta que os artefatos estão na pasta 'dataSet/'."}
 
-    # As colunas de features que o modelo espera, na ordem exata.
-    # Em um cenário real, isso seria salvo junto com o modelo, mas podemos definir aqui
-    # com base no nosso script de pré-processamento.
-    x_columns = [
-        'Age', 'Coffee_Intake', 'Caffeine_mg', 'Sleep_Hours', 'Sleep_Quality', 'BMI',
-        'Heart_Rate', 'Physical_Activity_Hours', 'Smoking', 'Alcohol_Consumption',
-        'Gender_Male', 'Country_Brazil', 'Country_Canada', 'Country_Germany',
-        'Country_USA', 'Health_Issues_Mild', 'Health_Issues_None',
-        'Occupation_Other', 'Occupation_Service', 'Occupation_Student'
-    ]
+    # Pega os nomes das colunas diretamente do scaler, garantindo consistência com o treinamento
+    x_columns = scaler.feature_names_in_
 
     # Converte o dicionário de entrada para um DataFrame do Pandas
     novo_usuario_df = pd.DataFrame([data])
