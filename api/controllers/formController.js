@@ -30,13 +30,22 @@ const getPrediction = (data) => {
         });
 
         pythonProcess.on('close', (code) => {
+            // Log da saída bruta para depuração
+            console.log(`Python script stdout: ${result}`);
+            console.error(`Python script stderr: ${error}`);
+
             if (code !== 0) {
                 console.error(`Python script exited with code ${code}`);
-                console.error(`Stderr: ${error}`);
                 return reject(new Error('Erro no script de previsão.'));
             }
             try {
-                resolve(JSON.parse(result));
+                const predictionResult = JSON.parse(result);
+                // Verifica se o script retornou um erro interno
+                if (predictionResult.error) {
+                    console.error("Erro retornado pelo script Python:", predictionResult.error);
+                    return reject(new Error(predictionResult.error));
+                }
+                resolve(predictionResult);
             } catch (e) {
                 console.error("Falha ao decodificar JSON da predição:", result);
                 reject(new Error('Resposta inválida do script de previsão.'));
@@ -70,7 +79,7 @@ const createForm = async (req, res) => {
             "Age": Idade,
             "Gender": Genero === 'Masculino' ? 'Male' : (Genero === 'Feminino' ? 'Female' : 'Other'),
             "Coffee_Intake": xicarasDiaCafe,
-            "Caffeine_mg": xicarasDiaCafe * 95, // Estimativa de 95mg por xícara
+            "Caffeine_mg": xicarasDiaCafe * 90, // Estimativa de 90mg por xícara
             "Sleep_Hours": horasSono,
             "Sleep_Quality": qualidadeDeSono,
             "BMI": IMC,
