@@ -13,8 +13,10 @@ const getPrediction = (data) => {
         // Diretório raiz do projeto, para que o script encontre o modelo .joblib
         const projectRoot = path.join(__dirname, '..', '..');
 
-        // Usamos 'python3'. Se o executável for apenas 'python', ajuste aqui.
-        const pythonProcess = spawn('python3', [scriptPath, dataString], { cwd: projectRoot });
+        const pythonExecutable = path.join(projectRoot, 'venv', 'bin', 'python3');
+
+        // Spawns the python script using the virtual environment's executable
+        const pythonProcess = spawn(pythonExecutable, [scriptPath, dataString], { cwd: projectRoot });
 
         let result = '';
         let error = '';
