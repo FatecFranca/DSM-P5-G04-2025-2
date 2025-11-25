@@ -72,6 +72,12 @@ const createForm = async (req, res) => {
             problemasDeSaude, atvFisicaSemanalHrs, Ocupacao, 
             Fuma,
             Alcool
+        }, {
+            fields: [
+                'Id_usuario', 'Idade', 'Genero', 'xicarasDiaCafe', 'horasSono', 
+                'qualidadeDeSono', 'IMC', 'frequenciaCardio', 'problemasDeSaude', 
+                'atvFisicaSemanalHrs', 'Ocupacao', 'Fuma', 'Alcool'
+            ]
         });
 
         // Mapeamento de dados para o script Python
